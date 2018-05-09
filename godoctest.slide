@@ -1,0 +1,138 @@
+godoctest
+A tool to avoid writing some of the tests boilerplate
+10 May 2018
+Tags: go, golang, tests
+
+Vytautas Šaltenis
+Observability, Uber
+vytas@uber.com
+http://rtfb.lt/
+@rtfb
+
+* Intro: myself
+
+~6yrs a hobbyist Gopher
+~2yrs a professional Gopher
+
+.link http://rtfb.lt
+
+* Intro: testing
+
+Who writes tests?
+
+Who's ever annoyed at writing tests?
+
+There will be three parts to this talk:
+
+- the idea and motivation behind godoctest
+- the implementation
+- the takeaways
+
+* Intro: doctest
+
+There's this other language, Python.
+
+They have doctests. Bastards.
+
+* Doctest example
+
+.code -numbers ./python.py
+
+* Side note
+
+Reminds of Knuth's Literate Programming a bit?
+
+.image ./Literate_Programming_book_cover.jpg
+
+* So why no doctest for Go?
+
+- No repl
+- Static types
+
+* Why would one even want a doctest for Go?
+
+Consider this code:
+
+.code ./swapport.go /^func swapPort/,/^}/
+
+Did I just write an off-by-one bug here, or no?
+
+* A table-driven test
+
+.code -numbers ./swapport_test.go /^func TestSwapPort/,/^}/
+
+* A table-driven test
+
+.code -numbers ./swapport_test.go /^func TestSwapPort/,/^}/ HLinteresting
+
+* Can we automate that?
+
+Can we perhaps produce this:
+
+.code ./swapport_test.go /tests :=/,/}{/ HLstruct
+
+From this:
+
+.code ./swapport.go /^func swapPort/
+
+* Hint: yes!
+
+Of course we can. Go standard library will help:
+
+.code ./imports.go /^import/,/^\)/
+
+The entire [[https://github.com/rtfb/godoctest/blob/master/extract.go][extraction code]] is ~350 lines.
+
+(All the project here: [[https://github.com/rtfb/godoctest]])
+
+* A complete example
+
+Here's an entire gotoctest-ed func:
+
+.code -numbers ./fib.go
+
+* A more complicated case
+
+Oh noes! How can we do varargs?
+
+.code -numbers ./varargs.go /^func/,/^}/
+
+Well, quite easy:
+
+.code -numbers ./varargs_test.go /^func/,/^}/
+
+* A more more complicated case
+
+Now a real trouble: pointers.
+
+.code -numbers ./ptrargs.go /^func/,/^}/
+
+* Generated code
+
+Part 1
+
+.code -numbers ./ptrargs_test.go /^func Test_ptrargs_gdt5/,/^}/
+
+* Generated code
+
+Part 2
+
+.code -numbers ./ptrargs_test2.go /^func Test_ptrargs_gdt5/,/^}/
+
+* Outstanding questions
+
+- Usability: run tests on the fly vs check in gen code?
+- Support for more types? Channels, perhaps?
+
+* Takeaway
+
+Parsing Go is easy! Don't hesitate to try it out, you might like the result.
+
+I haven't done any of these yet, but probably will:
+
+- Leverage Go parser for a friendlier config language
+- Leverage Go parser for a DSL
+
+* Thank you!
+
+Questions?
